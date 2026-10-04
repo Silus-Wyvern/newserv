@@ -285,6 +285,36 @@ std::string IntegralExpression::V1PresenceLookupNode::str() const {
   return "V_V1Present";
 }
 
+// SilusPSO local change 2026-10-03: V_Level
+IntegralExpression::LevelLookupNode::LevelLookupNode() {}
+
+bool IntegralExpression::LevelLookupNode::operator==(const Node& other) const {
+  return dynamic_cast<const LevelLookupNode*>(&other) != nullptr;
+}
+
+int64_t IntegralExpression::LevelLookupNode::evaluate(const Env& env) const {
+  return env.level;
+}
+
+std::string IntegralExpression::LevelLookupNode::str() const {
+  return "V_Level";
+}
+
+// SilusPSO local change 2026-10-02: V_Difficulty
+IntegralExpression::DifficultyLookupNode::DifficultyLookupNode() {}
+
+bool IntegralExpression::DifficultyLookupNode::operator==(const Node& other) const {
+  return dynamic_cast<const DifficultyLookupNode*>(&other) != nullptr;
+}
+
+int64_t IntegralExpression::DifficultyLookupNode::evaluate(const Env& env) const {
+  return static_cast<int64_t>(env.difficulty);
+}
+
+std::string IntegralExpression::DifficultyLookupNode::str() const {
+  return "V_Difficulty";
+}
+
 IntegralExpression::ConstantNode::ConstantNode(int64_t value)
     : value(value) {}
 
@@ -450,6 +480,12 @@ std::unique_ptr<const IntegralExpression::Node> IntegralExpression::parse_expr(s
   }
   if (text == "V_V1Present") {
     return std::make_unique<V1PresenceLookupNode>();
+  }
+  if (text == "V_Level") { // SilusPSO local change 2026-10-03
+    return std::make_unique<LevelLookupNode>();
+  }
+  if (text == "V_Difficulty") { // SilusPSO local change 2026-10-02
+    return std::make_unique<DifficultyLookupNode>();
   }
 
   // Check for constants

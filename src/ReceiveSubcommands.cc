@@ -4964,8 +4964,10 @@ static void on_quest_exchange_item_bb(std::shared_ptr<Client> c, SubcommandMessa
     new_item.enforce_stack_size_limits(limits);
 
     size_t found_index = p->inventory.find_item_by_primary_identifier(cmd.find_item.primary_identifier());
-    auto found_item = p->remove_item(p->inventory.items[found_index].data.id, 1, limits);
-    send_destroy_item_to_lobby(c, found_item.id, 1);
+    // SilusPSO local change (port of kevthoma/newserv df4cdd3): destroy by the ORIGINAL id; remove_item returns id 0xFFFFFFFF for part of a stack.
+    uint32_t found_item_id = p->inventory.items[found_index].data.id;
+    p->remove_item(found_item_id, 1, limits);
+    send_destroy_item_to_lobby(c, found_item_id, 1);
 
     new_item.id = l->generate_item_id(c->lobby_client_id);
     p->add_item(new_item, limits);
@@ -4993,7 +4995,8 @@ static void on_wrap_item_bb(std::shared_ptr<Client> c, SubcommandMessage& msg) {
 
   auto p = c->character_file();
   auto item = p->remove_item(cmd.item.id, 1, *s->data->item_stack_limits(c->version()));
-  send_destroy_item_to_lobby(c, item.id, 1);
+  // SilusPSO local change (port of kevthoma/newserv df4cdd3): destroy by the ORIGINAL id; remove_item returns id 0xFFFFFFFF for part of a stack.
+  send_destroy_item_to_lobby(c, cmd.item.id, 1);
   item.wrap(*s->data->item_stack_limits(c->version()), cmd.present_color);
   p->add_item(item, *s->data->item_stack_limits(c->version()));
   send_create_inventory_item_to_lobby(c, c->lobby_client_id, item);
@@ -5020,8 +5023,10 @@ static void on_photon_drop_exchange_for_item_bb(std::shared_ptr<Client> c, Subco
     new_item.enforce_stack_size_limits(limits);
 
     size_t found_index = p->inventory.find_item_by_primary_identifier(0x03100000);
-    auto found_item = p->remove_item(p->inventory.items[found_index].data.id, 0, limits);
-    send_destroy_item_to_lobby(c, found_item.id, found_item.stack_size(limits));
+    // SilusPSO local change (port of kevthoma/newserv df4cdd3): destroy by the ORIGINAL id; remove_item returns id 0xFFFFFFFF for part of a stack.
+    uint32_t found_item_id = p->inventory.items[found_index].data.id;
+    auto found_item = p->remove_item(found_item_id, 0, limits);
+    send_destroy_item_to_lobby(c, found_item_id, found_item.stack_size(limits));
 
     new_item.id = l->generate_item_id(c->lobby_client_id);
     p->add_item(new_item, limits);
@@ -5062,11 +5067,13 @@ static void on_photon_drop_exchange_for_s_rank_special_bb(std::shared_ptr<Client
       }
     }
 
-    auto payment_item = p->remove_item(p->inventory.items[payment_item_index].data.id, cost, limits);
-    send_destroy_item_to_lobby(c, payment_item.id, cost);
+    // SilusPSO local change (port of kevthoma/newserv df4cdd3): destroy by the ORIGINAL id; remove_item returns id 0xFFFFFFFF for part of a stack.
+    uint32_t payment_item_id = p->inventory.items[payment_item_index].data.id;
+    p->remove_item(payment_item_id, cost, limits);
+    send_destroy_item_to_lobby(c, payment_item_id, cost);
 
     auto item = p->remove_item(cmd.item_id, 1, limits);
-    send_destroy_item_to_lobby(c, item.id, cost);
+    send_destroy_item_to_lobby(c, cmd.item_id, 1); // 1, not cost: this is the weapon
     item.data1[2] = cmd.special_type;
     p->add_item(item, limits);
     send_create_inventory_item_to_lobby(c, c->lobby_client_id, item);
@@ -5174,8 +5181,10 @@ static void on_photon_crystal_exchange_bb(std::shared_ptr<Client> c, SubcommandM
   auto s = c->require_server_state();
   auto p = c->character_file();
   size_t index = p->inventory.find_item_by_primary_identifier(0x03100200);
-  auto item = p->remove_item(p->inventory.items[index].data.id, 1, *s->data->item_stack_limits(c->version()));
-  send_destroy_item_to_lobby(c, item.id, 1);
+  // SilusPSO local change (port of kevthoma/newserv df4cdd3): destroy by the ORIGINAL id; remove_item returns id 0xFFFFFFFF for part of a stack.
+  uint32_t crystal_item_id = p->inventory.items[index].data.id;
+  p->remove_item(crystal_item_id, 1, *s->data->item_stack_limits(c->version()));
+  send_destroy_item_to_lobby(c, crystal_item_id, 1);
   l->drop_mode = ServerDropMode::DISABLED;
   l->allowed_drop_modes = (1 << static_cast<uint8_t>(l->drop_mode)); // DISABLED only
 }
@@ -5258,9 +5267,12 @@ static void on_quest_F95F_result_bb(std::shared_ptr<Client> c, SubcommandMessage
 
   bool failed = false;
   ItemData ticket_item;
+  // SilusPSO local change (port of kevthoma/newserv df4cdd3): destroy by the ORIGINAL id; remove_item returns id 0xFFFFFFFF for part of a stack.
+  uint32_t ticket_item_id = 0xFFFFFFFF;
   try {
     size_t index = p->inventory.find_item_by_primary_identifier(0x03100400); // Photon Ticket
-    ticket_item = p->remove_item(p->inventory.items[index].data.id, result.first, limits);
+    ticket_item_id = p->inventory.items[index].data.id;
+    ticket_item = p->remove_item(ticket_item_id, result.first, limits);
   } catch (const std::out_of_range&) {
     failed = true;
   }
@@ -5284,7 +5296,7 @@ static void on_quest_F95F_result_bb(std::shared_ptr<Client> c, SubcommandMessage
   }
 
   // Note: It seems Sega used 6xDB here; we use 6x29 instead.
-  send_destroy_item_to_lobby(c, ticket_item.id, result.first);
+  send_destroy_item_to_lobby(c, ticket_item_id, result.first);
   send_create_inventory_item_to_lobby(c, c->lobby_client_id, new_item);
   send_gallon_plan_result(c, cmd.success_label, cmd.result_code_reg, 0, cmd.result_index_reg, cmd.result_index);
 }
@@ -5400,9 +5412,12 @@ static void on_momoka_item_exchange_bb(std::shared_ptr<Client> c, SubcommandMess
 
   bool failed = false;
   ItemData found_item;
+  // SilusPSO local change (port of kevthoma/newserv df4cdd3): destroy by the ORIGINAL id; remove_item returns id 0xFFFFFFFF for part of a stack.
+  uint32_t found_item_id = 0xFFFFFFFF;
   try {
     size_t found_index = p->inventory.find_item_by_primary_identifier(cmd.find_item.primary_identifier());
-    found_item = p->remove_item(p->inventory.items[found_index].data.id, 1, limits);
+    found_item_id = p->inventory.items[found_index].data.id;
+    found_item = p->remove_item(found_item_id, 1, limits);
   } catch (const std::out_of_range& e) {
     failed = true;
   }
@@ -5424,7 +5439,7 @@ static void on_momoka_item_exchange_bb(std::shared_ptr<Client> c, SubcommandMess
   }
 
   // Note: It seems Sega used 6xDB here; we use 6x29 instead.
-  send_destroy_item_to_lobby(c, found_item.id, 1);
+  send_destroy_item_to_lobby(c, found_item_id, 1);
   send_create_inventory_item_to_lobby(c, c->lobby_client_id, new_item);
   send_command(c, 0x23, 0x00);
 }
@@ -5484,15 +5499,18 @@ static void on_upgrade_weapon_attribute_bb(std::shared_ptr<Client> c, Subcommand
       throw std::runtime_error("bonus value exceeds 100");
     }
 
-    auto removed_payment_item = p->remove_item(
-        payment_item.id, cmd.payment_count, *s->data->item_stack_limits(c->version()));
-    send_destroy_item_to_lobby(c, removed_payment_item.id, cmd.payment_count);
+    // SilusPSO local change (port of kevthoma/newserv df4cdd3): destroy by the ORIGINAL id; remove_item returns id 0xFFFFFFFF for part of a stack.
+    // Also re-find the weapon after the removal: a whole stack going shifts the array and invalidates `item`.
+    uint32_t payment_item_id = payment_item.id;
+    p->remove_item(payment_item_id, cmd.payment_count, *s->data->item_stack_limits(c->version()));
+    send_destroy_item_to_lobby(c, payment_item_id, cmd.payment_count);
 
-    item.data1[attribute_index] = cmd.attribute;
-    item.data1[attribute_index + 1] = new_attr_value;
+    auto& upgraded_item = p->inventory.items[p->inventory.find_item(cmd.item_id)].data;
+    upgraded_item.data1[attribute_index] = cmd.attribute;
+    upgraded_item.data1[attribute_index + 1] = new_attr_value;
 
-    send_destroy_item_to_lobby(c, item.id, 1);
-    send_create_inventory_item_to_lobby(c, c->lobby_client_id, item);
+    send_destroy_item_to_lobby(c, upgraded_item.id, 1);
+    send_create_inventory_item_to_lobby(c, c->lobby_client_id, upgraded_item);
     send_quest_function_call(c, cmd.success_label);
 
   } catch (const std::exception& e) {

@@ -8,7 +8,7 @@
 # have regular draw distance.
 # TODO: 90% of stuff is included, bring home the last 10%.
 
-.meta visibility="all"
+.meta visibility="hidden"
 .meta name="Draw Distance"
 .meta description="Extends the draw\ndistance of many\nobjects"
 

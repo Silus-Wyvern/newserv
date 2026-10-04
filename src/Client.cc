@@ -386,6 +386,7 @@ bool Client::evaluate_quest_availability_expression(
       .num_players = num_players,
       .event = event,
       .v1_present = v1_present,
+      .level = p->disp.stats.level + 1, // SilusPSO local change 2026-10-03
   };
   int64_t ret = expr->evaluate(env);
   if (this->log.should_log(phosg::LogLevel::L_INFO)) {

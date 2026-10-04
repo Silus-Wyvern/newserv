@@ -1,3 +1,4 @@
 {
   "AvailableIf": "!V_V1Present",
+  "Joinable": true,
 }

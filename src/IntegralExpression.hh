@@ -23,6 +23,7 @@ public:
     size_t num_players;
     uint8_t event;
     bool v1_present;
+    uint32_t level = 0; // SilusPSO local change 2026-10-03: the player's displayed level (1-200)
   };
 
   IntegralExpression(const std::string& text);
@@ -176,6 +177,26 @@ protected:
   public:
     V1PresenceLookupNode();
     virtual ~V1PresenceLookupNode() = default;
+    virtual bool operator==(const Node& other) const;
+    virtual int64_t evaluate(const Env& env) const;
+    virtual std::string str() const;
+  };
+
+  // SilusPSO local change 2026-10-03: the player's level, as displayed (1-200)
+  class LevelLookupNode : public Node {
+  public:
+    LevelLookupNode();
+    virtual ~LevelLookupNode() = default;
+    virtual bool operator==(const Node& other) const;
+    virtual int64_t evaluate(const Env& env) const;
+    virtual std::string str() const;
+  };
+
+  // SilusPSO local change 2026-10-02: the game's difficulty, 0 = Normal .. 3 = Ultimate
+  class DifficultyLookupNode : public Node {
+  public:
+    DifficultyLookupNode();
+    virtual ~DifficultyLookupNode() = default;
     virtual bool operator==(const Node& other) const;
     virtual int64_t evaluate(const Env& env) const;
     virtual std::string str() const;

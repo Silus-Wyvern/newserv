@@ -3,7 +3,7 @@
 # https://www.gc-forever.com/forums/viewtopic.php?t=2049
 # Xbox port by fuzziqersoftware
 
-.meta visibility="all"
+.meta visibility="hidden"
 .meta name="Mag alert"
 .meta description="Plays a sound when\nyour Mag is hungry"
 

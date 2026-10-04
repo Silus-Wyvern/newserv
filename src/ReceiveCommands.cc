@@ -4753,6 +4753,7 @@ std::shared_ptr<Lobby> create_game_generic(
         .num_players = 1,
         .event = game->event,
         .v1_present = is_v1(creator_c->version()),
+        .level = p->disp.stats.level + 1, // SilusPSO local change 2026-10-03
     };
     for (const auto& it : *quest_flag_rewrites) {
       bool should_set = it.second.evaluate(env);

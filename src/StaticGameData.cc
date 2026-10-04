@@ -132,7 +132,24 @@ const std::vector<std::string> lobby_event_to_name = {
 
 const std::unordered_map<std::string, uint8_t> name_to_lobby_event = {
     {"none", 0}, {"xmas", 1}, {"val", 3}, {"easter", 4}, {"hallo", 5}, {"sonic", 6}, {"newyear", 7}, {"summer", 8},
-    {"white", 9}, {"wedding", 10}, {"fall", 11}, {"s-spring", 12}, {"s-summer", 13}, {"spring", 14}};
+    {"white", 9}, {"wedding", 10}, {"fall", 11}, {"s-spring", 12}, {"s-summer", 13}, {"spring", 14},
+
+    // Alias for event 9 (White Day - the Japanese reciprocal of Valentine's Day, when boys give
+    // gifts back). "bval" = "boys' Valentine", which is a more descriptive mnemonic than "white"
+    // for anyone who doesn't already know the holiday.
+    //
+    // This is an INPUT alias only. Both "white" and "bval" resolve to 9; nothing is replaced.
+    // lobby_event_to_name (the reverse/display array) still holds "white" at index 9, so the
+    // server's OUTPUT is unchanged and anything parsing it is unaffected. Quest gates are
+    // unaffected too - they compare V_Event against the resolved integer, never against a name.
+    //
+    // Why an alias rather than a help-text correction: the in-game "Event names" help lives in
+    // config.json (InformationMenuContents) as hand-written prose and is NOT generated from this
+    // table, so the two can drift. It has always listed "bval" and never listed "white", so
+    // before this change `$event bval` failed with "No such lobby event". Adding the alias makes
+    // the documented name work. Note the two sides are still independent - if you add a name
+    // here, add it to the config.json help text as well.
+    {"bval", 9}};
 
 const std::unordered_map<uint8_t, std::string> lobby_type_to_name = {
     {0x00, "normal"}, {0x0F, "inormal"}, {0x10, "ipc"}, {0x11, "iball"}, {0x67, "cave2u"}, {0xD4, "cave1"},
