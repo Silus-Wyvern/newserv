@@ -1,4 +1,0 @@
-{
-  "AvailableIf": "false",
-  "Note": "GUARD, NOT METADATA. This quest has no English Blue Burst script - only q036-bb-j.bin. newserv builds quest menus filtering on VERSION, not language, and falls back to whichever language exists, so it was appearing in the Solo menu under its Japanese name. Silus confirmed that in a live client on 2026-08-25, both that it was there before this guard and that it is gone after. The value false is a constant the availability expression parser knows (IntegralExpression.cc parse_token), so this can never be true. TO PUT THE QUEST BACK, DELETE THIS FILE. Adding an English script is NOT enough on its own, because this guard still hides it. The portal quest guide behaves the OPPOSITE way: its filter keys on the absence of an English script and lets the quest back in by itself. See DECIDED.md [[questguide-english-only]] and [[japanese-quest-translation-parked]]."
-}

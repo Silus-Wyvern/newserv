@@ -1,3 +1,3 @@
 {
-  "Note": "UN-GATED DELIBERATELY, 2026-09-04. This file previously read \"AvailableIf\": \"V_Event != 3\", which withdrew Gallon's Shop from the Shops menu whenever the lobby event was set to 3 (val) and offered q219, Gallon's Shop (Valentine), in its place. q219 has NO English Blue Burst script - only q219-bb-j.bin - and newserv's language fallback is asked-for then English then whatever exists, so setting val took this shop away from English players and handed them the Japanese one. The gate is removed so this shop is offered at every lobby event including val, and q219 carries the guard instead. TO RESTORE THE ORIGINAL BEHAVIOUR, put \"AvailableIf\": \"V_Event != 3\" back here AND remove the guard from q219.json - one without the other leaves the Shops menu with no Gallon's Shop at all during val. See DECIDED.md [[valentine-shop-guarded]]."
+  "AvailableIf": "V_Event != 3",
 }

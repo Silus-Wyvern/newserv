@@ -372,7 +372,7 @@ public:
   struct RandomState {
     PSOV2Encryption random;
     PSOV2Encryption location_table_random;
-    std::array<uint32_t, 0x20> location_index_table;
+    std::array<uint32_t, 0x80> location_index_table; // SilusPSO 2026-10-09: 32 -> 128 random locations per room; toiletman74 (newserv-atomic)
     uint32_t location_indexes_populated;
     uint32_t location_indexes_used;
     uint32_t location_entries_base_offset;

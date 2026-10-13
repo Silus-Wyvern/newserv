@@ -57,3 +57,29 @@ system/players
 system/quests/includes
 system/quests/private
 .vscode
+
+# --- SilusPSO: our local data stays off git (Silus, 2026-10-10)
+# quest folders we added
+/system/quests/daily/
+/system/quests/events-conversion/
+/system/quests/events-rotation/
+/system/quests/events-seasonal/
+/system/quests/featured/
+/system/quests/test/
+# our custom quests: our numbers are 1000 and up (upstream has none), plus ours placed in stock folders
+/system/quests/**/q1[0-9][0-9][0-9]*
+/system/quests/shops/q504*
+# our sidecars (.json) beside stock quests -- tracked stock .json files are not affected
+/system/quests/extermination/*.json
+/system/quests/retrieval/*.json
+/system/quests/vr/*.json
+/system/quests/shops/*.json
+/system/quests/solo-extra/*.json
+# backups, superseded copies and by-products
+*.bak
+*.bak-*
+*.superseded-*
+/newserv.pre-*
+/system/patch-bb.repo-placeholder/
+/system/maps/**/*.rel.txt
+/system/maps/**/*.dat.txt
